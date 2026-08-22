@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course, Lesson
@@ -10,10 +11,12 @@ from lms.serializers import CourseSerializer, LessonSerializer
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 
 class LessonCreateAPIView(CreateAPIView):
     serializer_class = LessonSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 
 class LessonListAPIView(ListAPIView):
@@ -29,6 +32,7 @@ class LessonRetrieveAPIView(RetrieveAPIView):
 class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 
 class LessonDestroyAPIView(DestroyAPIView):
