@@ -1,5 +1,5 @@
 from rest_framework.generics import UpdateAPIView
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import FormParser, MultiPartParser
 
 from users.models import User
 from users.serializers import UserSerializer
