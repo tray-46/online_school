@@ -1,0 +1,184 @@
+[
+  {
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+      "user": [
+        "user1@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": 1,
+      "lesson": null,
+      "amount": 2500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 2,
+    "fields": {
+      "user": [
+        "user1@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 6,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 3,
+    "fields": {
+      "user": [
+        "user1@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 11,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 4,
+    "fields": {
+      "user": [
+        "user2@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 6,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 5,
+    "fields": {
+      "user": [
+        "user2@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 7,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 6,
+    "fields": {
+      "user": [
+        "user2@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 8,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 7,
+    "fields": {
+      "user": [
+        "user2@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 9,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 8,
+    "fields": {
+      "user": [
+        "user2@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 10,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 9,
+    "fields": {
+      "user": [
+        "user3@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": 5,
+      "lesson": null,
+      "amount": 10000,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 10,
+    "fields": {
+      "user": [
+        "user3@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 1,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 11,
+    "fields": {
+      "user": [
+        "user3@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 6,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 12,
+    "fields": {
+      "user": [
+        "user3@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 11,
+      "amount": 500,
+      "method": 1
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 13,
+    "fields": {
+      "user": [
+        "user3@sky.school.com"
+      ],
+      "date": "2026-08-25",
+      "course": null,
+      "lesson": 12,
+      "amount": 500,
+      "method": 1
+    }
+  }
+]
