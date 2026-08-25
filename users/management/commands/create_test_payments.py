@@ -19,9 +19,9 @@ class Command(BaseCommand):
 
         user1_payment_1 = Payment(user=user1, date="2026-08-01", course_id=1, amount=2500, method=1)
         payments.append(user1_payment_1)
-        user1_payment_2 = Payment(user=user1, date="2026-08-25", lesson_id=6, amount=500, method=1)
+        user1_payment_2 = Payment(user=user1, date="2026-08-25", lesson_id=6, amount=500, method=0)
         payments.append(user1_payment_2)
-        user1_payment_3 = Payment(user=user1, date="2026-08-26", lesson_id=11, amount=500, method=1)
+        user1_payment_3 = Payment(user=user1, date="2026-08-26", lesson_id=11, amount=500, method=0)
         payments.append(user1_payment_3)
 
         user2_payment_1 = Payment(user=user2, date="2026-07-01", lesson_id=6, amount=500, method=1)
@@ -35,7 +35,7 @@ class Command(BaseCommand):
         user2_payment_5 = Payment(user=user2, date="2026-07-12", lesson_id=10, amount=500, method=1)
         payments.append(user2_payment_5)
 
-        user3_payment_1 = Payment(user=user3, date="2026-07-01", course_id=5, amount=10000, method=1)
+        user3_payment_1 = Payment(user=user3, date="2026-07-01", course_id=5, amount=10000, method=0)
         payments.append(user3_payment_1)
         user3_payment_2 = Payment(user=user3, date="2026-07-03", lesson_id=1, amount=500, method=1)
         payments.append(user3_payment_2)
