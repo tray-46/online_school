@@ -53,4 +53,4 @@ class Command(BaseCommand):
         cyber_sec_8, _ = Lesson.objects.get_or_create(title="Первая установка Linux", course_id=5)
         cyber_sec_9, _ = Lesson.objects.get_or_create(title="Структура ОС Linux", course_id=5)
 
-        self.stdout.write(self.style.SUCCESS("Courses successfully added"))
+        self.stdout.write(self.style.SUCCESS("Lessons successfully added"))
