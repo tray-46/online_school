@@ -1,11 +1,9 @@
-import io
-
 from typing import Any
 
-from django.core.management.color import no_style
-from django.db import connection
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from django.core.management.color import no_style
+from django.db import connection
 
 from lms.models import Course, Lesson
 from users.models import Payment

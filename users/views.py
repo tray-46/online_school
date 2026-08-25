@@ -3,8 +3,8 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 
-from users.models import User, Payment
-from users.serializers import UserSerializer, PaymentSerializer
+from users.models import Payment, User
+from users.serializers import PaymentSerializer, UserSerializer
 
 
 # Create your views here.
@@ -22,7 +22,16 @@ class UserUpdateAPIView(UpdateAPIView):
 class PaymentListAPIView(ListAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
-    search_fields = ("course__title", "lesson__title", "method", "date",)
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+        OrderingFilter,
+    )
+    search_fields = (
+        "course__title",
+        "lesson__title",
+        "method",
+        "date",
+    )
     ordering_fields = ("date",)
     filterset_fields = ("course", "lesson", "course__title", "lesson__title", "method")

@@ -14,7 +14,7 @@ class Command(BaseCommand):
             description="Напишем вашу первую программу - Hello, Python World!",
             preview_image="lessons/previews/py_l1_QmlRYf6.png",
             video_link="=Pc9MvZkHlMa",
-            course_id=1
+            course_id=1,
         )
         python_2, _ = Lesson.objects.get_or_create(title="Типы данных", course_id=1)
         python_3, _ = Lesson.objects.get_or_create(title="Циклы", course_id=1)
@@ -22,9 +22,7 @@ class Command(BaseCommand):
         python_5, _ = Lesson.objects.get_or_create(title="Функции", course_id=1)
 
         java_1, _ = Lesson.objects.get_or_create(
-            title="Знакомство с Java",
-            description="Напишем вашу первую программу - Hello, Java World!",
-            course_id = 2
+            title="Знакомство с Java", description="Напишем вашу первую программу - Hello, Java World!", course_id=2
         )
         java_2, _ = Lesson.objects.get_or_create(title="Переменные. Вывод и ввод данных", course_id=2)
         java_3, _ = Lesson.objects.get_or_create(title="Математические операции", course_id=2)

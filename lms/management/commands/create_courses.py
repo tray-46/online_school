@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 
 from lms.models import Course
 
+
 class Command(BaseCommand):
     help = "Create some users for tests"
 

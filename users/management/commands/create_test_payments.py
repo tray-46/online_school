@@ -7,6 +7,7 @@ from users.models import Payment
 
 User = get_user_model()
 
+
 class Command(BaseCommand):
     help = "Create some users for tests"
 
