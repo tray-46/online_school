@@ -39,7 +39,9 @@ class Payment(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Пользователь",
                              help_text="Выберите пользователя")
-    date = models.DateField(auto_now_add=True)
+    # date = models.DateField(auto_now_add=True)
+    # отключение автозаполнения для тестовых данных
+    date = models.DateField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="payments", null=True, blank=True,
                                verbose_name="Курс", help_text="Выберите курс")
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="payments", null=True, blank=True,
