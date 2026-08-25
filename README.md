@@ -38,6 +38,12 @@ Create database with name specified in settings.
 The project uses a modified AbstractUser model. If you've already applied migrations to the database, 
 you may need to roll back the migrations for the "auth" application.
 
+Optionally you can fill database with test data by executing commandL
+```
+python manage.py fill_db
+```
+**Warning:**  
+command will clear existing payments, lessons and courses data and reset respective id sequences
 
 ### To run the application:  
 In console open project directory and execute following command:
