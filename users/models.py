@@ -37,7 +37,7 @@ class Payment(models.Model):
         (1, "перевод на счёт"),
     )
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Пользователь",
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="payments", null=True, blank=True, verbose_name="Пользователь",
                              help_text="Выберите пользователя")
     # date = models.DateField(auto_now_add=True)
     # отключение автозаполнения для тестовых данных
