@@ -17,7 +17,14 @@ class PaymentSerializer(serializers.ModelSerializer):
     """
     Serializer for Payment model
     """
+    title = serializers.SerializerMethodField()
 
     class Meta:
         model = Payment
-        fields = "__all__"
+        fields = ("user", "title", "date", "amount", "course", "lesson", "method",)
+
+    def get_title(self, obj):
+        if obj.course:
+            return obj.course.title
+        elif obj.lesson:
+            return obj.lesson.title
