@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "users",
     "lms",
 ]
@@ -147,4 +148,7 @@ AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    "DATE_FORMAT": "%Y-%m-%d",
+    "TIME_FORMAT": "%H:%M:%S",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",)
 }
