@@ -34,7 +34,8 @@ class Lesson(models.Model):
     represents a lesson
     """
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс", help_text="Выберите курс")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons", verbose_name="Курс",
+                               help_text="Выберите курс")
     title = models.CharField(max_length=50, verbose_name="Название урока", help_text="Укажите название урока")
     description = models.TextField(
         null=True, blank=True, verbose_name="Описание урока", help_text="Укажите описание урока"
