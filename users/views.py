@@ -2,17 +2,22 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.viewsets import ViewSet, ModelViewSet
 
 from users.models import User, Payment
 from users.serializers import UserSerializer, PaymentSerializer
 
 
 # Create your views here.
+class UserListAPIView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     parser_classes = [MultiPartParser, FormParser]
+
 
 class PaymentListAPIView(ListAPIView):
     queryset = Payment.objects.all()
