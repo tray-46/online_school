@@ -1,11 +1,13 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.decorators import permission_classes
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer
+from lms.models import Course, Lesson, Payment
+from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
 from users.permissions import IsModerator, IsAuthor
 
 
@@ -72,3 +74,24 @@ class LessonUpdateAPIView(UpdateAPIView):
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
+
+
+class PaymentListAPIView(ListAPIView):
+    # queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+        OrderingFilter,
+    )
+    search_fields = (
+        "course__title",
+        "lesson__title",
+        "method",
+        "date",
+    )
+    ordering_fields = ("date",)
+    filterset_fields = ("course", "lesson", "course__title", "lesson__title", "method")
+
+    def get_queryset(self):
+        return Payment.objects.filter(user=self.request.user)
