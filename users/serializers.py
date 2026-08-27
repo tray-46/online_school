@@ -3,34 +3,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TO
     TokenRefreshSerializer as TRSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import Payment, User
-
-
-class PaymentSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Payment model
-    """
-
-    title = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Payment
-        fields = (
-            "user",
-            "title",
-            "date",
-            "amount",
-            "course",
-            "lesson",
-            "method",
-        )
-
-    def get_title(self, obj: Payment) -> str:
-        if obj.course:
-            return obj.course.title
-        elif obj.lesson:
-            return obj.lesson.title
-        return ""
+from lms.serializers import PaymentSerializer
+from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):

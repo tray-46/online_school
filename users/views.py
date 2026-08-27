@@ -5,8 +5,10 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView as TOPView, TokenRefreshView as TRView
 
-from users.models import Payment, User
-from users.serializers import PaymentSerializer, UserSerializer, UserCreateSerializer, TokenObtainPairSerializer, \
+from lms.models import Payment
+from lms.serializers import PaymentSerializer
+from users.models import User
+from users.serializers import UserSerializer, UserCreateSerializer, TokenObtainPairSerializer, \
     TokenRefreshSerializer
 
 

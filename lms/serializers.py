@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, Payment
+
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -31,3 +32,30 @@ class CourseSerializer(serializers.ModelSerializer):
 
     # def get_lessons(self, obj):
     #     return [lesson.title for lesson in obj.lessons.all()]
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Payment model
+    """
+
+    title = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Payment
+        fields = (
+            "user",
+            "title",
+            "date",
+            "amount",
+            "course",
+            "lesson",
+            "method",
+        )
+
+    def get_title(self, obj: Payment) -> str:
+        if obj.course:
+            return obj.course.title
+        elif obj.lesson:
+            return obj.lesson.title
+        return ""
