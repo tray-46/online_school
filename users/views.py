@@ -1,13 +1,19 @@
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView as TOPView, TokenRefreshView as TRView
-
+from rest_framework.serializers import BaseSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView as TOPView
+from rest_framework_simplejwt.views import TokenRefreshView as TRView
 
 from users.models import User
 from users.permissions import IsAccountOwner
-from users.serializers import UserSerializer, UserCreateSerializer, TokenObtainPairSerializer, \
-    TokenRefreshSerializer, UserDetailSerializer
+from users.serializers import (
+    TokenObtainPairSerializer,
+    TokenRefreshSerializer,
+    UserCreateSerializer,
+    UserDetailSerializer,
+    UserSerializer,
+)
 
 
 # Create your views here.
@@ -15,7 +21,7 @@ class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
     permission_classes = (AllowAny,)
 
-    def perform_create(self, serializer: UserCreateSerializer):
+    def perform_create(self, serializer: BaseSerializer) -> None:
         user = serializer.save()
         user.set_password(serializer.validated_data["password"])
         user.save()
@@ -30,7 +36,7 @@ class UserRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     # serializer_class = UserSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[BaseSerializer]:
         user_profile = self.get_object()
         user = self.request.user
         if user_profile == user:

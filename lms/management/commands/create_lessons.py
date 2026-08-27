@@ -15,7 +15,7 @@ class Command(BaseCommand):
             preview_image="lessons/previews/py_l1_QmlRYf6.png",
             video_link="=Pc9MvZkHlMa",
             course_id=1,
-            author=1
+            author=1,
         )
         python_2, _ = Lesson.objects.get_or_create(title="Типы данных", course_id=1, author=1)
         python_3, _ = Lesson.objects.get_or_create(title="Циклы", course_id=1, author=1)
@@ -23,7 +23,10 @@ class Command(BaseCommand):
         python_5, _ = Lesson.objects.get_or_create(title="Функции", course_id=1, author=1)
 
         java_1, _ = Lesson.objects.get_or_create(
-            title="Знакомство с Java", description="Напишем вашу первую программу - Hello, Java World!", course_id=2, author=9
+            title="Знакомство с Java",
+            description="Напишем вашу первую программу - Hello, Java World!",
+            course_id=2,
+            author=9,
         )
         java_2, _ = Lesson.objects.get_or_create(title="Переменные. Вывод и ввод данных", course_id=2, author=9)
         java_3, _ = Lesson.objects.get_or_create(title="Математические операции", course_id=2, author=9)
@@ -48,7 +51,9 @@ class Command(BaseCommand):
         cyber_sec_4, _ = Lesson.objects.get_or_create(title="Знакомство с терминалом", course_id=5, author=11)
         cyber_sec_5, _ = Lesson.objects.get_or_create(title="Устройства в Linux", course_id=5, author=11)
         cyber_sec_6, _ = Lesson.objects.get_or_create(title="Диски и файловые системы", course_id=5, author=11)
-        cyber_sec_7, _ = Lesson.objects.get_or_create(title="Устройство файловых сисВведение в Linux", course_id=5, author=11)
+        cyber_sec_7, _ = Lesson.objects.get_or_create(
+            title="Устройство файловых сисВведение в Linux", course_id=5, author=11
+        )
         cyber_sec_8, _ = Lesson.objects.get_or_create(title="Первая установка Linux", course_id=5, author=11)
         cyber_sec_9, _ = Lesson.objects.get_or_create(title="Структура ОС Linux", course_id=5, author=11)
 

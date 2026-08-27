@@ -12,10 +12,11 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         moderators_group, _ = Group.objects.get_or_create(name="Moderators")
 
-        moderator, _ = User.objects.get_or_create(email="moderator@sku.school.com", username="moderator",
-                                               password="moderator")
+        moderator, _ = User.objects.get_or_create(
+            email="moderator@sku.school.com", username="moderator", password="moderator"
+        )
         moderator.set_password(moderator.password)
         moderator.groups.add(moderators_group)
         moderator.save()
 
-        self.stdout.write(self.style.SUCCESS(f"Moderator successfully added"))
+        self.stdout.write(self.style.SUCCESS("Moderator successfully added"))

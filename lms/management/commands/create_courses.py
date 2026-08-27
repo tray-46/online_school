@@ -13,6 +13,8 @@ class Command(BaseCommand):
         java_course, _ = Course.objects.get_or_create(title="java", description="java for beginners", author=9)
         odin_s_course, _ = Course.objects.get_or_create(title="1С программист", description="1C like a pro", author=10)
         tester_course, _ = Course.objects.get_or_create(title="Инженер по тестированию", description="QA", author=1)
-        cyber_sec_course, _ = Course.objects.get_or_create(title="Специалист по кибербезопасности", description="CB<", author=11)
+        cyber_sec_course, _ = Course.objects.get_or_create(
+            title="Специалист по кибербезопасности", description="CB<", author=11
+        )
 
         self.stdout.write(self.style.SUCCESS("Courses successfully added"))

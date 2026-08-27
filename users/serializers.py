@@ -1,7 +1,10 @@
+from typing import Any
+
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TOPSerializer, \
-    TokenRefreshSerializer as TRSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import AuthUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TOPSerializer
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer as TRSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 
 from lms.serializers import PaymentSerializer
 from users.models import User
@@ -14,7 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "email", "username", "avatar",)
+        fields = (
+            "id",
+            "email",
+            "username",
+            "avatar",
+        )
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -42,27 +50,26 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class TokenObtainPairSerializer(TOPSerializer):
 
     @classmethod
-    def get_token(cls, user: User):
+    def get_token(cls, user: AuthUser) -> Token:
         token = super().get_token(user)
 
-        token["username"] = user.username
-        token["email"] = user.email
+        token["user"] = user
 
         return token
 
 
 class TokenRefreshSerializer(TRSerializer):
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
         data = super().validate(attrs)
 
         refresh_token_str = attrs["refresh"]
         refresh_token = RefreshToken(refresh_token_str)
 
         user_id = refresh_token.payload.get("user_id")
-        user = User.objects.get(id=user_id)
-
-        data["username"] = user.username
-        data["email"] = user.email
+        if user_id:
+            user = User.objects.get(id=user_id)
+            data["username"] = user.username
+            data["email"] = user.email
 
         return data

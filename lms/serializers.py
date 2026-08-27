@@ -3,7 +3,6 @@ from rest_framework import serializers
 from lms.models import Course, Lesson, Payment
 
 
-
 class LessonSerializer(serializers.ModelSerializer):
     """
     Serializer for Lesson model
