@@ -1,0 +1,62 @@
+[
+  {
+    "model": "lms.course",
+    "pk": 1,
+    "fields": {
+      "title": "python",
+      "preview_image": "",
+      "description": "python for beginners",
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 2,
+    "fields": {
+      "title": "java",
+      "preview_image": "",
+      "description": "java for beginners",
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 3,
+    "fields": {
+      "title": "1С программист",
+      "preview_image": "",
+      "description": "1C like a pro",
+      "author": 10
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 4,
+    "fields": {
+      "title": "Инженер по тестированию",
+      "preview_image": "",
+      "description": "QA",
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 5,
+    "fields": {
+      "title": "Специалист по кибербезопасности",
+      "preview_image": "",
+      "description": "CB<",
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 7,
+    "fields": {
+      "title": "bzzzz_mod_updated",
+      "preview_image": "",
+      "description": null,
+      "author": 9
+    }
+  }
+]

@@ -1,0 +1,326 @@
+[
+  {
+    "model": "lms.lesson",
+    "pk": 1,
+    "fields": {
+      "course": 1,
+      "title": "Знакомство с Python",
+      "description": "Напишем вашу первую программу - Hello, Python World!",
+      "preview_image": "lessons/previews/py_l1_QmlRYf6.png",
+      "video_link": "=Pc9MvZkHlMa",
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 2,
+    "fields": {
+      "course": 1,
+      "title": "Типы данных",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 3,
+    "fields": {
+      "course": 1,
+      "title": "Циклы",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 4,
+    "fields": {
+      "course": 1,
+      "title": "Математические операции",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 5,
+    "fields": {
+      "course": 1,
+      "title": "Функции",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 6,
+    "fields": {
+      "course": 2,
+      "title": "Знакомство с Java",
+      "description": "Напишем вашу первую программу - Hello, Java World!",
+      "preview_image": "",
+      "video_link": null,
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 7,
+    "fields": {
+      "course": 2,
+      "title": "Переменные. Вывод и ввод данных",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 8,
+    "fields": {
+      "course": 2,
+      "title": "Математические операции",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 9,
+    "fields": {
+      "course": 2,
+      "title": "Условная конструкция. Оператор if",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 10,
+    "fields": {
+      "course": 2,
+      "title": "Циклы while и for. Вложенные циклы",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 9
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 11,
+    "fields": {
+      "course": 3,
+      "title": "Что такое 1C",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 10
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 12,
+    "fields": {
+      "course": 4,
+      "title": "Что такое разработка ПО",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 13,
+    "fields": {
+      "course": 4,
+      "title": "Кто участвует в процессе разработки",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 14,
+    "fields": {
+      "course": 4,
+      "title": "Как выстроить эффективную работу",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 15,
+    "fields": {
+      "course": 4,
+      "title": "Что такое качественное ПО",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 16,
+    "fields": {
+      "course": 4,
+      "title": "Что такое QA",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 17,
+    "fields": {
+      "course": 4,
+      "title": "Чем занимаются QA-инженеры ",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 18,
+    "fields": {
+      "course": 4,
+      "title": "Виды тестирования",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 19,
+    "fields": {
+      "course": 4,
+      "title": "7 принципов тестирования",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 20,
+    "fields": {
+      "course": 4,
+      "title": "Что нужно, чтобы стать QA-инженером",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 21,
+    "fields": {
+      "course": 5,
+      "title": "Введение в Linux",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 22,
+    "fields": {
+      "course": 5,
+      "title": "Первая установка Linux",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 23,
+    "fields": {
+      "course": 5,
+      "title": "Структура ОС Linux",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 24,
+    "fields": {
+      "course": 5,
+      "title": "Знакомство с терминалом",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 25,
+    "fields": {
+      "course": 5,
+      "title": "Устройства в Linux",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 26,
+    "fields": {
+      "course": 5,
+      "title": "Диски и файловые системы",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 27,
+    "fields": {
+      "course": 5,
+      "title": "test_by_moded",
+      "description": null,
+      "preview_image": "",
+      "video_link": null,
+      "author": 11
+    }
+  }
+]
