@@ -2,14 +2,18 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView as TOPView, TokenRefreshView as TRView
 
 from users.models import Payment, User
-from users.serializers import PaymentSerializer, UserSerializer, UserCreateSerializer
+from users.serializers import PaymentSerializer, UserSerializer, UserCreateSerializer, TokenObtainPairSerializer, \
+    TokenRefreshSerializer
 
 
 # Create your views here.
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
+    permission_classes = (AllowAny,)
 
     def perform_create(self, serializer: UserCreateSerializer):
         user = serializer.save()
@@ -35,6 +39,16 @@ class UserUpdateAPIView(UpdateAPIView):
 
 class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()
+
+
+class TokenObtainPairView(TOPView):
+    serializer_class = TokenObtainPairSerializer
+    permission_classes = (AllowAny,)
+
+
+class TokenRefreshView(TRView):
+    serializer_class = TokenRefreshSerializer
+    permission_classes = (AllowAny,)
 
 
 class PaymentListAPIView(ListAPIView):
