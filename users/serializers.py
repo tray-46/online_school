@@ -40,3 +40,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("email", "username", "first_name", "last_name", "phone", "city", "avatar", "payments")
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User instance creation
+    """
+    class Meta:
+        model = User
+        fields = ("email", "username", "password")
