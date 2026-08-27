@@ -12,6 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for User model
     """
 
+    class Meta:
+        model = User
+        fields = ("id", "email", "username", "avatar",)
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User model
+    """
+
     payments = PaymentSerializer(many=True, read_only=True)
 
     class Meta:
