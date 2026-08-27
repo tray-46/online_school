@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = "Create some users for tests"
+    help = "Create some payments for tests"
 
     def handle(self, *args: Any, **options: Any) -> None:
         user1 = User.objects.get(username="user1")

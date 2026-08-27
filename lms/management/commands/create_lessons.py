@@ -6,7 +6,7 @@ from lms.models import Lesson
 
 
 class Command(BaseCommand):
-    help = "Create some users for tests"
+    help = "Create some lessons for tests"
 
     def handle(self, *args: Any, **options: Any) -> None:
         python_1, _ = Lesson.objects.get_or_create(
