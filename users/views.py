@@ -58,9 +58,9 @@ class UserDestroyAPIView(DestroyAPIView):
 
 class TokenObtainPairView(TOPView):
     serializer_class = TokenObtainPairSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)  # type: ignore[assignment]
 
 
 class TokenRefreshView(TRView):
     serializer_class = TokenRefreshSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)  # type: ignore[assignment]

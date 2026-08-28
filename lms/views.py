@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated, _SupportsHasPermission
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import ModelViewSet
 
@@ -20,7 +20,7 @@ class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    def get_permissions(self) -> Sequence[_SupportsHasPermission]:
+    def get_permissions(self) -> Sequence:
         if self.action == "create":
             self.permission_classes = [IsAuthenticated, ~IsModerator]
         elif self.action == "destroy":

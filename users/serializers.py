@@ -49,13 +49,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 class TokenObtainPairSerializer(TOPSerializer):
 
-    @classmethod
-    def get_token(cls, user: AuthUser) -> Token:
-        token = super().get_token(user)
+    def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
+        data = super().validate(attrs)
 
-        token["user"] = user
+        if self.user:
+            data["username"] = self.user.username
+            data["email"] = self.user.email
 
-        return token
+        return data
 
 
 class TokenRefreshSerializer(TRSerializer):
