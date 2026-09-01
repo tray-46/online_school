@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from lms.models import Course, Lesson, Payment
+from lms.models import Course, Lesson, Payment, CourseSubscription
 from lms.validators import YouTubeLinkValidator
 
 
@@ -60,3 +60,17 @@ class PaymentSerializer(serializers.ModelSerializer):
         elif obj.lesson:
             return obj.lesson.title
         return ""
+
+
+class CourseSubscriptionSerializer(serializers.ModelSerializer):
+    """
+        Serializer for CourseSubscription model
+    """
+    course = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        error_messages={"does_not_exist": "No course with that id"},
+    )
+
+    class Meta:
+        model = CourseSubscription
+        fields = "__all__"
