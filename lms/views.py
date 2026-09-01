@@ -2,15 +2,19 @@ from typing import Sequence
 
 from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, \
+    get_object_or_404
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from lms.models import Course, Lesson, Payment
-from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
+from lms.models import Course, Lesson, Payment, CourseSubscription
+from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, CourseSubscriptionSerializer
 from users.permissions import IsAuthor, IsModerator
 
 
@@ -104,3 +108,25 @@ class PaymentListAPIView(ListAPIView):
         if self.request.user.is_authenticated:
             return Payment.objects.filter(user=self.request.user)
         return Payment.objects.none()
+
+
+class CourseSubscriptionAPIView(APIView):
+    permission_classes = [IsAuthenticated, ~IsModerator]
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        course_id = self.kwargs.get("pk")
+        subscription = CourseSubscription.objects.filter(course=course_id, user=user).first()
+
+        if subscription:
+            subscription.delete()
+            message = "Подписка удалена"
+            return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
+
+        serializer = CourseSubscriptionSerializer(data={"user": user.pk, "course": course_id})
+        if serializer.is_valid():
+            serializer.save()
+            message = "Подписка добавлена"
+            return Response({"message": message}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
