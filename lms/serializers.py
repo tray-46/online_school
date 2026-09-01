@@ -21,8 +21,9 @@ class CourseSerializer(serializers.ModelSerializer):
     """
 
     lessons_count = serializers.SerializerMethodField()
-    lessons = LessonSerializer(many=True, required=False)
-    # lessons = serializers.SerializerMethodField()
+    # lessons = LessonSerializer(many=True, required=False)
+    lessons = serializers.SerializerMethodField()
+    subscription = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -31,8 +32,18 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_lessons_count(self, obj: Course) -> int:
         return obj.lessons.count()
 
-    # def get_lessons(self, obj):
-    #     return [lesson.title for lesson in obj.lessons.all()]
+    def get_lessons(self, obj):
+        return [lesson.title for lesson in obj.lessons.all()]
+
+    def get_subscription(self, obj):
+        user = self.context["request"].user
+        subscription = CourseSubscription.objects.filter(course=obj, user=user).first()
+        print(f"{user=} {obj=} {subscription=}")
+
+        if subscription:
+            return True
+        else:
+            return False
 
 
 class PaymentSerializer(serializers.ModelSerializer):
