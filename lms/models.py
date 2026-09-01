@@ -128,3 +128,23 @@ class Payment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} payment for {self.course if self.course else self.lesson}"
+
+
+class CourseSubscription(models.Model):
+    """
+    represent a subscription for the course
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс")
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "user"],
+                name="unique_course_subscription",
+                violation_error_message=f"User already has subscription for this course."
+            )
+        ]
