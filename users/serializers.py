@@ -1,36 +1,31 @@
+from typing import Any
+
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import AuthUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TOPSerializer
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer as TRSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 
-from users.models import Payment, User
-
-
-class PaymentSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Payment model
-    """
-
-    title = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Payment
-        fields = (
-            "user",
-            "title",
-            "date",
-            "amount",
-            "course",
-            "lesson",
-            "method",
-        )
-
-    def get_title(self, obj: Payment) -> str:
-        if obj.course:
-            return obj.course.title
-        elif obj.lesson:
-            return obj.lesson.title
-        return ""
+from lms.serializers import PaymentSerializer
+from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User model
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "username",
+            "avatar",
+        )
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for User model
     """
@@ -39,4 +34,43 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("email", "username", "first_name", "last_name", "phone", "city", "avatar", "payments")
+        fields = ("id", "email", "username", "first_name", "last_name", "phone", "city", "avatar", "payments")
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User instance creation
+    """
+
+    class Meta:
+        model = User
+        fields = ("email", "username", "password")
+
+
+class TokenObtainPairSerializer(TOPSerializer):
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
+        data = super().validate(attrs)
+
+        if self.user:
+            data["username"] = self.user.username
+            data["email"] = self.user.email
+
+        return data
+
+
+class TokenRefreshSerializer(TRSerializer):
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
+        data = super().validate(attrs)
+
+        refresh_token_str = attrs["refresh"]
+        refresh_token = RefreshToken(refresh_token_str)
+
+        user_id = refresh_token.payload.get("user_id")
+        if user_id:
+            user = User.objects.get(id=user_id)
+            data["username"] = user.username
+            data["email"] = user.email
+
+        return data

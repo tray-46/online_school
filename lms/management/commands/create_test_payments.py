@@ -3,13 +3,13 @@ from typing import Any
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from users.models import Payment
+from lms.models import Payment
 
 User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = "Create some users for tests"
+    help = "Create some payments for tests"
 
     def handle(self, *args: Any, **options: Any) -> None:
         user1 = User.objects.get(username="user1")

@@ -13,7 +13,8 @@ dependencies = [
     "python-dotenv (>=1.2.3,<2.0.0)",
     "psycopg2 (>=2.9.12,<3.0.0)",
     "pillow (>=12.3.0,<13.0.0)",
-    "django-filter (>=26.1,<27.0)"
+    "django-filter (>=26.1,<27.0)",
+    "djangorestframework-simplejwt (>=5.5.1,<6.0.0)"
 ]
 
 
@@ -51,7 +52,7 @@ disallow_untyped_defs = true
 no_implicit_optional = true
 warn_return_any = true
 exclude = ["^venv",]
-plugins = ["mypy_django_plugin.main"]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 
 [tool.django-stubs]
 django_settings_module = "config.settings"
