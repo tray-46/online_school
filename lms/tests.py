@@ -231,6 +231,6 @@ class CourseSubscriptionTest(APITestCase):
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(url)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, result)
         self.assertEqual(CourseSubscription.objects.count(), 0)

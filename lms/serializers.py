@@ -39,7 +39,6 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_subscription(self, obj: Course) -> bool:
         user = self.context["request"].user
         subscription = CourseSubscription.objects.filter(course=obj, user=user).first()
-        print(f"{user=} {obj=} {subscription=}")
 
         if subscription:
             return True
