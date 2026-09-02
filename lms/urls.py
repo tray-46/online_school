@@ -11,6 +11,7 @@ router.register(r"courses", views.CourseViewSet, basename="course")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("courses/<int:pk>/subscription/", views.CourseSubscriptionAPIView.as_view(), name="course_subscription"),
     path("lessons/create/", views.LessonCreateAPIView.as_view(), name="lesson_create"),
     path("lessons/", views.LessonListAPIView.as_view(), name="lesson_list"),
     path("lessons/<int:pk>/", views.LessonRetrieveAPIView.as_view(), name="lesson_detail"),
