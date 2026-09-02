@@ -145,6 +145,6 @@ class CourseSubscription(models.Model):
             models.UniqueConstraint(
                 fields=["course", "user"],
                 name="unique_course_subscription",
-                violation_error_message=f"User already has subscription for this course."
+                violation_error_message="User already has subscription for this course.",
             )
         ]

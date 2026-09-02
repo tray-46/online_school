@@ -1,10 +1,9 @@
 from typing import Any
 
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import AuthUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TOPSerializer
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as TRSerializer
-from rest_framework_simplejwt.tokens import RefreshToken, Token
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from lms.serializers import PaymentSerializer
 from users.models import User

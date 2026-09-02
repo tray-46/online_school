@@ -1,21 +1,21 @@
-from typing import Sequence
+from typing import Any, Sequence
 
 from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, \
-    get_object_or_404
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from lms.models import Course, Lesson, Payment, CourseSubscription
+from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.paginators import Paginator
-from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, CourseSubscriptionSerializer
+from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer
 from users.permissions import IsAuthor, IsModerator
 
 
@@ -116,15 +116,21 @@ class PaymentListAPIView(ListAPIView):
 class CourseSubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated, ~IsModerator]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         user = self.request.user
+
+        if not user or not user.is_authenticated:
+            return Response(
+                {"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
         course_id = self.kwargs.get("pk")
         subscription = CourseSubscription.objects.filter(course=course_id, user=user).first()
 
         if subscription:
             subscription.delete()
             message = "Подписка удалена"
-            return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": message}, status=status.HTTP_200_OK)
 
         serializer = CourseSubscriptionSerializer(data={"user": user.pk, "course": course_id})
         if serializer.is_valid():

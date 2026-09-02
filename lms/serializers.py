@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from lms.models import Course, Lesson, Payment, CourseSubscription
+from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.validators import YouTubeLinkValidator
 
 
@@ -8,6 +8,7 @@ class LessonSerializer(serializers.ModelSerializer):
     """
     Serializer for Lesson model
     """
+
     video_link = serializers.CharField(required=False, validators=[YouTubeLinkValidator()])
 
     class Meta:
@@ -32,10 +33,10 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_lessons_count(self, obj: Course) -> int:
         return obj.lessons.count()
 
-    def get_lessons(self, obj):
+    def get_lessons(self, obj: Course) -> list[str]:
         return [lesson.title for lesson in obj.lessons.all()]
 
-    def get_subscription(self, obj):
+    def get_subscription(self, obj: Course) -> bool:
         user = self.context["request"].user
         subscription = CourseSubscription.objects.filter(course=obj, user=user).first()
         print(f"{user=} {obj=} {subscription=}")
@@ -75,8 +76,9 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 class CourseSubscriptionSerializer(serializers.ModelSerializer):
     """
-        Serializer for CourseSubscription model
+    Serializer for CourseSubscription model
     """
+
     course = serializers.PrimaryKeyRelatedField(
         queryset=Course.objects.all(),
         error_messages={"does_not_exist": "No course with that id"},

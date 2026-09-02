@@ -1,16 +1,18 @@
+from typing import Any
+
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from lms.models import Course, Lesson, CourseSubscription
+from lms.models import Course, CourseSubscription, Lesson
 from users.models import User
-from django.contrib.auth.models import Group
 
 
 # Create your tests here.
 class LessonTest(APITestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create(email="user@lms.com", username="user", password="user")
         self.author = User.objects.create(email="author@lms.com", username="author", password="author")
 
@@ -25,17 +27,13 @@ class LessonTest(APITestCase):
             course=self.course, title="test lesson1", description="lesson1 description", author=self.author
         )
 
-    def test_create_lesson(self):
+    def test_create_lesson(self) -> None:
         """
         Ensure we can create a new lesson
         """
         url = reverse("lms:lesson_create")
 
-        data = {
-            "course": self.course.pk,
-            "title": "test lesson2",
-            "description": "lesson2 description"
-        }
+        data = {"course": self.course.pk, "title": "test lesson2", "description": "lesson2 description"}
 
         response = self.client.post(url, data)
 
@@ -52,7 +50,7 @@ class LessonTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_list_lessons(self):
+    def test_list_lessons(self) -> None:
         url = reverse("lms:lesson_list")
         result = {
             "count": 1,
@@ -68,14 +66,9 @@ class LessonTest(APITestCase):
                     "preview_image": None,
                     "author": self.author.pk,
                 }
-            ]
+            ],
         }
-        empty_result = {
-            "count": 0,
-            "next": None,
-            "previous": None,
-            "results": []
-        }
+        empty_result: dict[str, Any] = {"count": 0, "next": None, "previous": None, "results": []}
 
         response = self.client.get(url)
 
@@ -102,7 +95,7 @@ class LessonTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, empty_result)
 
-    def test_retrieve_lesson(self):
+    def test_retrieve_lesson(self) -> None:
         url = reverse("lms:lesson_detail", args=[self.lesson.pk])
         result = {
             "id": self.lesson.pk,
@@ -137,7 +130,7 @@ class LessonTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_lesson(self):
+    def test_update_lesson(self) -> None:
         url = reverse("lms:lesson_update", args=[self.lesson.pk])
 
         data = {
@@ -169,7 +162,7 @@ class LessonTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_delete_lesson(self):
+    def test_delete_lesson(self) -> None:
         url = reverse("lms:lesson_delete", args=[self.lesson.pk])
 
         response = self.client.delete(url)
@@ -195,7 +188,7 @@ class LessonTest(APITestCase):
 
 class CourseSubscriptionTest(APITestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.user1 = User.objects.create(email="user1@lms.com", username="user1", password="user1")
         self.user2 = User.objects.create(email="user2@lms.com", username="user2", password="user2")
         self.author = User.objects.create(email="author@lms.com", username="author", password="author")
@@ -212,7 +205,7 @@ class CourseSubscriptionTest(APITestCase):
         )
         self.subscription = CourseSubscription.objects.create(user=self.user1, course=self.course)
 
-    def test_subscribe(self):
+    def test_subscribe(self) -> None:
         url = reverse("lms:course_subscription", args=[self.course.pk])
         result = {"message": "Подписка добавлена"}
 
@@ -227,7 +220,7 @@ class CourseSubscriptionTest(APITestCase):
         self.assertEqual(response.data, result)
         self.assertEqual(CourseSubscription.objects.count(), 2)
 
-    def test_unsubscribe(self):
+    def test_unsubscribe(self) -> None:
         url = reverse("lms:course_subscription", args=[self.course.pk])
         result = {"message": "Подписка удалена"}
 
