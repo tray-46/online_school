@@ -42,9 +42,9 @@ class CourseViewSet(ModelViewSet):
     def get_queryset(self) -> QuerySet[Course]:
         is_moderator = IsModerator()
         if is_moderator.has_permission(self.request, self):
-            return Course.objects.all()
+            return Course.objects.all().order_by("id")
         elif self.request.user.is_authenticated:
-            return Course.objects.filter(author=self.request.user)
+            return Course.objects.filter(author=self.request.user).order_by("id")
         return Course.objects.none()
 
 
@@ -66,9 +66,9 @@ class LessonListAPIView(ListAPIView):
     def get_queryset(self) -> QuerySet[Lesson]:
         is_moderator = IsModerator()
         if is_moderator.has_permission(self.request, self):
-            return Lesson.objects.all()
+            return Lesson.objects.all().order_by("id")
         elif self.request.user.is_authenticated:
-            return Lesson.objects.filter(author=self.request.user)
+            return Lesson.objects.filter(author=self.request.user).order_by("id")
         return Lesson.objects.none()
 
 
