@@ -32,6 +32,9 @@ lint = [
     "django-stubs (>=6.1.0,<7.0.0)",
     "djangorestframework-stubs (>=3.18.0,<4.0.0)"
 ]
+dev = [
+    "coverage (>=7.16.0,<8.0.0)"
+]
 
 [tool.black]
 line-length=119
