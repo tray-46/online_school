@@ -2,6 +2,7 @@ from typing import Any, Sequence
 
 from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
@@ -15,7 +16,8 @@ from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.paginators import Paginator
-from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer
+from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer, \
+    SubscribedSerializer, UnsubscribedSerializer
 from users.permissions import IsAuthor, IsModerator
 
 
@@ -85,6 +87,11 @@ class LessonUpdateAPIView(UpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
 
+@extend_schema(
+    request=None,
+    responses={204: None},
+    description="Delete the specifies lesson."
+)
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
@@ -116,6 +123,15 @@ class PaymentListAPIView(ListAPIView):
 class CourseSubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated, ~IsModerator]
 
+    @extend_schema(
+        summary="lms_course_subscription",
+        description="Processing course subscription: add or delete users subscription for specified course.",
+        request=None,
+        responses={
+            200: UnsubscribedSerializer,
+            201: SubscribedSerializer,
+        },
+    )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         user = self.request.user
 

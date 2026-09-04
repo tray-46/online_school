@@ -86,3 +86,11 @@ class CourseSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSubscription
         fields = "__all__"
+
+
+class SubscribedSerializer(serializers.Serializer):
+    message = serializers.CharField(default="Подписка добавлена")
+
+
+class UnsubscribedSerializer(serializers.Serializer):
+    message = serializers.CharField(default="Подписка удалена")
