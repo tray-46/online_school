@@ -20,4 +20,5 @@ urlpatterns = [
     path("lessons/<int:pk>/delete/", views.LessonDestroyAPIView.as_view(), name="lesson_delete"),
     path("payments/", views.PaymentListAPIView.as_view(), name="payments_list"),
     path("payments/<int:pk>/", views.PaymentRetrieveAPIView.as_view(), name="payments_detail"),
+    path("payments/webhook/", views.stripe_webhook, name="stripe_webhook"),
 ]

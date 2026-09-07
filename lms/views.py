@@ -1,14 +1,18 @@
 from typing import Any, Sequence
 
+import stripe
+from django.conf import settings
 from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, \
     get_object_or_404
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
@@ -209,3 +213,37 @@ class CourseSubscriptionAPIView(APIView):
             return Response({"message": message}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    request=None,
+    responses={200: None},
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def stripe_webhook(request: HttpRequest) -> HttpResponse:
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except stripe.error.SignatureVerificationError as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = session.get("metadata", {}).get("user_id")
+        session_id = session.get("id")
+
+        if user_id and session_id:
+            try:
+                Payment.objects.filter(user=user_id, stripe_checkout_session=session_id).update(status=True)
+            except Payment.DoesNotExist:
+                pass
+
+    return Response(status=status.HTTP_200_OK)
