@@ -24,7 +24,7 @@ class LessonTest(APITestCase):
             title="test course", description="test course description", author=self.author
         )
         self.lesson = Lesson.objects.create(
-            course=self.course, title="test lesson1", description="lesson1 description", author=self.author
+            course=self.course, title="test lesson1", description="lesson1 description", price=100, author=self.author
         )
 
     def test_create_lesson(self) -> None:
@@ -65,6 +65,7 @@ class LessonTest(APITestCase):
                     "description": self.lesson.description,
                     "preview_image": None,
                     "author": self.author.pk,
+                    "price": 100
                 }
             ],
         }
@@ -104,6 +105,7 @@ class LessonTest(APITestCase):
             "title": self.lesson.title,
             "description": self.lesson.description,
             "preview_image": None,
+            "price": 100,
             "author": self.author.pk,
         }
 
