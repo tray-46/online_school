@@ -25,6 +25,7 @@ class Course(models.Model):
     description = models.TextField(
         null=True, blank=True, verbose_name="Описание курса", help_text="Укажите описание курса"
     )
+    price = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Автор")
 
     class Meta:
@@ -57,6 +58,7 @@ class Lesson(models.Model):
     video_link = models.CharField(
         max_length=250, null=True, blank=True, verbose_name="Ссылка на видео", help_text="Укажите ссылку на видео"
     )
+    price = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Автор")
 
     class Meta:
@@ -86,9 +88,9 @@ class Payment(models.Model):
         verbose_name="Пользователь",
         help_text="Выберите пользователя",
     )
-    # date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
     # отключение автозаполнения для тестовых данных
-    date = models.DateField()
+    # date = models.DateField()
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
@@ -111,6 +113,11 @@ class Payment(models.Model):
     method = models.PositiveSmallIntegerField(
         choices=PAYMENT_METHOD_CHOICES, default=0, verbose_name="Способ оплаты", help_text="Выберите способ оплаты"
     )
+    stripe_checkout_session = models.CharField(max_length=255, null=True, blank=True,
+                                               verbose_name="Stripe Checkout Session Id")
+    stripe_checkout_url = models.CharField(max_length=500, null=True, blank=True,
+                                           verbose_name="Stripe Checkout Session url")
+    status = models.BooleanField(default=False, verbose_name="Payment status")
 
     class Meta:
         verbose_name = "Платёж"
