@@ -5,7 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, \
+    get_object_or_404
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -19,6 +20,8 @@ from lms.paginators import Paginator
 from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer, \
     SubscribedSerializer, UnsubscribedSerializer
 from users.permissions import IsAuthor, IsModerator
+from lms.services import create_stripe_product, create_stripe_price, create_stripe_checkout_session, \
+    get_stripe_checkout_session_info
 
 
 # Create your views here.
@@ -97,6 +100,37 @@ class LessonDestroyAPIView(DestroyAPIView):
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
 
 
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer: BaseSerializer) -> None:
+        user = self.request.user
+        course = None
+        lesson = None
+        title = ""
+        amount = 0
+
+        if "courses" in self.request.path:
+            course = get_object_or_404(Course, pk=self.kwargs.get("pk"))
+            title = course.title
+            amount = course.price
+
+        if "lessons" in self.request.path:
+            lesson = course = get_object_or_404(Lesson, pk=self.kwargs.get("pk"))
+            title = lesson.title
+            amount = lesson.price
+
+        product = create_stripe_product(title)
+        price = create_stripe_price(product, amount)
+        checkout_session = create_stripe_checkout_session(price, user.id)
+
+        payment = serializer.save(user=self.request.user, course=course, lesson=lesson, amount=amount)
+        payment.stripe_checkout_session = checkout_session.id
+        payment.stripe_checkout_url = checkout_session.url
+        payment.save()
+
+
 class PaymentListAPIView(ListAPIView):
     # queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
@@ -118,6 +152,26 @@ class PaymentListAPIView(ListAPIView):
         if self.request.user.is_authenticated:
             return Payment.objects.filter(user=self.request.user)
         return Payment.objects.none()
+
+
+class PaymentRetrieveAPIView(RetrieveAPIView):
+    serializer_class = PaymentSerializer
+
+    def get_queryset(self) -> QuerySet[Payment]:
+        if self.request.user.is_authenticated:
+            return Payment.objects.filter(user=self.request.user)
+        return Payment.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        data = serializer.data
+
+        stripe_session = get_stripe_checkout_session_info(instance.stripe_checkout_session)
+        data["stripe_session"] = stripe_session.to_dict(recursive=True)
+
+        return Response(data)
 
 
 class CourseSubscriptionAPIView(APIView):
