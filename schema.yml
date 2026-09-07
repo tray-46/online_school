@@ -147,6 +147,37 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/lms/courses/{id}/buy/:
+    post:
+      operationId: lms_courses_buy_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Payment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
   /api/lms/courses/{id}/subscription/:
     post:
       operationId: lms_courses_subscription_create
@@ -381,6 +412,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedPaymentList'
           description: ''
+  /api/lms/payments/{id}/:
+    get:
+      operationId: lms_payments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lms
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/lms/payments/webhook/:
+    post:
+      operationId: lms_payments_webhook_create
+      tags:
+      - lms
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/users/:
     get:
       operationId: users_list
@@ -616,6 +678,11 @@ components:
           nullable: true
           title: Описание курса
           description: Укажите описание курса
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Стоимость
         author:
           type: integer
           nullable: true
@@ -651,6 +718,11 @@ components:
           nullable: true
           title: Обложка урока
           description: Загрузите изображение
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Стоимость
         course:
           type: integer
           title: Курс
@@ -797,6 +869,11 @@ components:
           nullable: true
           title: Описание курса
           description: Укажите описание курса
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Стоимость
         author:
           type: integer
           nullable: true
@@ -826,6 +903,11 @@ components:
           nullable: true
           title: Обложка урока
           description: Загрузите изображение
+        price:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Стоимость
         course:
           type: integer
           title: Курс
@@ -897,6 +979,7 @@ components:
         date:
           type: string
           format: date
+          readOnly: true
         amount:
           type: integer
           maximum: 2147483647
@@ -924,6 +1007,19 @@ components:
             * `1` - перевод на счёт
           minimum: 0
           maximum: 32767
+        stripe_checkout_session:
+          type: string
+          nullable: true
+          title: Stripe Checkout Session Id
+          maxLength: 255
+        stripe_checkout_url:
+          type: string
+          nullable: true
+          title: Stripe Checkout Session url
+          maxLength: 500
+        status:
+          type: boolean
+          title: Payment status
       required:
       - date
       - title
