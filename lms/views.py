@@ -1,31 +1,48 @@
 from typing import Any, Sequence
 
 import stripe
-from django.conf import settings
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, \
-    get_object_or_404
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    get_object_or_404,
+)
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from config.settings import STRIPE_WEBHOOK_SECRET
 from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.paginators import Paginator
-from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer, \
-    SubscribedSerializer, UnsubscribedSerializer
+from lms.serializers import (
+    CourseSerializer,
+    CourseSubscriptionSerializer,
+    LessonSerializer,
+    PaymentSerializer,
+    SubscribedSerializer,
+    UnsubscribedSerializer,
+)
+from lms.services import (
+    create_stripe_checkout_session,
+    create_stripe_price,
+    create_stripe_product,
+    get_stripe_checkout_session_info,
+)
 from users.permissions import IsAuthor, IsModerator
-from lms.services import create_stripe_product, create_stripe_price, create_stripe_checkout_session, \
-    get_stripe_checkout_session_info
 
 
 # Create your views here.
@@ -94,11 +111,7 @@ class LessonUpdateAPIView(UpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
 
-@extend_schema(
-    request=None,
-    responses={204: None},
-    description="Delete the specifies lesson."
-)
+@extend_schema(request=None, responses={204: None}, description="Delete the specifies lesson.")
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
@@ -110,6 +123,8 @@ class PaymentCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer: BaseSerializer) -> None:
         user = self.request.user
+        if not user or not user.is_authenticated:
+            raise PermissionDenied(detail="Must be authorised user.")
         course = None
         lesson = None
         title = ""
@@ -121,7 +136,7 @@ class PaymentCreateAPIView(CreateAPIView):
             amount = course.price
 
         if "lessons" in self.request.path:
-            lesson = course = get_object_or_404(Lesson, pk=self.kwargs.get("pk"))
+            lesson = get_object_or_404(Lesson, pk=self.kwargs.get("pk"))
             title = lesson.title
             amount = lesson.price
 
@@ -166,7 +181,7 @@ class PaymentRetrieveAPIView(RetrieveAPIView):
             return Payment.objects.filter(user=self.request.user)
         return Payment.objects.none()
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
@@ -227,9 +242,7 @@ def stripe_webhook(request: HttpRequest) -> HttpResponse:
     event = None
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
     except ValueError as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except stripe.error.SignatureVerificationError as e:

@@ -113,10 +113,12 @@ class Payment(models.Model):
     method = models.PositiveSmallIntegerField(
         choices=PAYMENT_METHOD_CHOICES, default=0, verbose_name="Способ оплаты", help_text="Выберите способ оплаты"
     )
-    stripe_checkout_session = models.CharField(max_length=255, null=True, blank=True,
-                                               verbose_name="Stripe Checkout Session Id")
-    stripe_checkout_url = models.CharField(max_length=500, null=True, blank=True,
-                                           verbose_name="Stripe Checkout Session url")
+    stripe_checkout_session = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name="Stripe Checkout Session Id"
+    )
+    stripe_checkout_url = models.CharField(
+        max_length=500, null=True, blank=True, verbose_name="Stripe Checkout Session url"
+    )
     status = models.BooleanField(default=False, verbose_name="Payment status")
 
     class Meta:
