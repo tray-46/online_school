@@ -63,6 +63,9 @@ class PaymentSerializer(serializers.ModelSerializer):
             "course",
             "lesson",
             "method",
+            "stripe_checkout_session",
+            "stripe_checkout_url",
+            "status",
         )
 
     def get_title(self, obj: Payment) -> str:
