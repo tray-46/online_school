@@ -113,6 +113,8 @@ class Payment(models.Model):
     method = models.PositiveSmallIntegerField(
         choices=PAYMENT_METHOD_CHOICES, default=0, verbose_name="Способ оплаты", help_text="Выберите способ оплаты"
     )
+    stripe_product_id = models.CharField(max_length=255, null=True, blank=True, verbose_name="Stripe Product ID")
+    stripe_price_id = models.CharField(max_length=255, null=True, blank=True, verbose_name="Stripe Price ID")
     stripe_checkout_session = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="Stripe Checkout Session Id"
     )
