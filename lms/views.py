@@ -144,10 +144,16 @@ class PaymentCreateAPIView(CreateAPIView):
         price = create_stripe_price(product, amount)
         checkout_session = create_stripe_checkout_session(price, user.id)
 
-        payment = serializer.save(user=self.request.user, course=course, lesson=lesson, amount=amount)
-        payment.stripe_checkout_session = checkout_session.id
-        payment.stripe_checkout_url = checkout_session.url
-        payment.save()
+        serializer.save(
+            user=self.request.user,
+            course=course,
+            lesson=lesson,
+            amount=amount,
+            stripe_product_id = product.id,
+            stripe_price_id = price.id,
+            stripe_checkout_session=checkout_session.id,
+            stripe_checkout_url=checkout_session.url
+        )
 
 
 class PaymentListAPIView(ListAPIView):
