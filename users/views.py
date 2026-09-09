@@ -1,6 +1,5 @@
 from typing import Any
 
-from django.http import HttpRequest, HttpResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser

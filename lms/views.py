@@ -3,6 +3,7 @@ from typing import Any, Sequence
 import stripe
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -149,10 +150,10 @@ class PaymentCreateAPIView(CreateAPIView):
             course=course,
             lesson=lesson,
             amount=amount,
-            stripe_product_id = product.id,
-            stripe_price_id = price.id,
+            stripe_product_id=product.id,
+            stripe_price_id=price.id,
             stripe_checkout_session=checkout_session.id,
-            stripe_checkout_url=checkout_session.url
+            stripe_checkout_url=checkout_session.url,
         )
 
 
@@ -246,17 +247,17 @@ class CourseSubscriptionAPIView(APIView):
     request=None,
     responses={200: None},
 )
+@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def stripe_webhook(request: HttpRequest) -> HttpResponse:
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    endpoint_secret = STRIPE_WEBHOOK_SECRET
 
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
-    except ValueError as e:
-        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    except stripe.error.SignatureVerificationError as e:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     if event["type"] == "checkout.session.completed":
