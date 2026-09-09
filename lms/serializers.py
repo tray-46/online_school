@@ -63,6 +63,8 @@ class PaymentSerializer(serializers.ModelSerializer):
             "course",
             "lesson",
             "method",
+            "stripe_product_id",
+            "stripe_price_id",
             "stripe_checkout_session",
             "stripe_checkout_url",
             "status",
