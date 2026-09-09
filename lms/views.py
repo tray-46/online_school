@@ -175,7 +175,7 @@ class PaymentListAPIView(ListAPIView):
 
     def get_queryset(self) -> QuerySet[Payment]:
         if self.request.user.is_authenticated:
-            return Payment.objects.filter(user=self.request.user)
+            return Payment.objects.filter(user=self.request.user).order_by("date")
         return Payment.objects.none()
 
 
@@ -245,7 +245,6 @@ class CourseSubscriptionAPIView(APIView):
 def stripe_webhook(request: HttpRequest) -> HttpResponse:
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-    event = None
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
