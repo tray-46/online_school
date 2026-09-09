@@ -5,39 +5,50 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def create_stripe_product(product_name: str) -> stripe.Product:
-    stripe_product = stripe.Product.create(name=product_name)
+    if not product_name:
+        raise ValueError("Product name is required")
 
-    return stripe_product
+    try:
+        stripe_product = stripe.Product.create(name=product_name)
+        return stripe_product
+    except stripe.error.StripeError as e:
+        raise e
 
 
-def create_stripe_price(product: stripe.Product, amount: float) -> stripe.Price:
+def create_stripe_price(product: stripe.Product, amount: float, currency: str = "rub") -> stripe.Price:
     unit_amount = int(amount * 100)
-    stripe_price = stripe.Price.create(
-        product=product.id,
-        unit_amount=unit_amount,
-        currency="rub",
-    )
 
-    return stripe_price
+    try:
+        stripe_price = stripe.Price.create(
+            product=product.id,
+            unit_amount=unit_amount,
+            currency=currency,
+        )
+        return stripe_price
+    except stripe.error.StripeError as e:
+        raise e
 
 
 def create_stripe_checkout_session(price: stripe.Price, user_id: int) -> stripe.checkout.Session:
-    checkout_session = stripe.checkout.Session.create(
-        line_items=[
-            {
-                "price": price.id,
-                "quantity": 1,
-            }
-        ],
-        mode="payment",
-        success_url=settings.STRIPE_CHECKOUT_SUCCESS_URL,
-        cancel_url=settings.STRIPE_CHECKOUT_CANCEL_URL,
-        metadata={
-            "user_id": str(user_id),
-        },
-    )
 
-    return checkout_session
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    "price": price.id,
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url=settings.STRIPE_CHECKOUT_SUCCESS_URL,
+            cancel_url=settings.STRIPE_CHECKOUT_CANCEL_URL,
+            metadata={
+                "user_id": str(user_id),
+            },
+        )
+        return checkout_session
+    except stripe.error.StripeError as e:
+        raise e
 
 
 def get_stripe_checkout_session_info(session_id: str) -> stripe.checkout.Session:
@@ -47,6 +58,8 @@ def get_stripe_checkout_session_info(session_id: str) -> stripe.checkout.Session
 
 if __name__ == "__main__":
     test_product = create_stripe_product("test product")
+    # print(test_product)
     product_price = create_stripe_price(test_product, 100)
-    session = create_stripe_checkout_session(product_price, 2)
-    print(session)
+    # print(product_price)
+    session = create_stripe_checkout_session(product_price, 1)
+    # print(session)
