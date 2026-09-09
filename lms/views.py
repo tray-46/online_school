@@ -193,8 +193,14 @@ class PaymentRetrieveAPIView(RetrieveAPIView):
 
         data = serializer.data
 
-        stripe_session = get_stripe_checkout_session_info(instance.stripe_checkout_session)
-        data["stripe_session"] = stripe_session.to_dict(recursive=True)
+        if instance.stripe_checkout_session:
+            try:
+                stripe_session = get_stripe_checkout_session_info(instance.stripe_checkout_session)
+                data["stripe_session"] = stripe_session.to_dict(recursive=True)
+            except stripe.error.StripeError:
+                data["stripe_session"] = None
+        else:
+            data["stripe_session"] = None
 
         return Response(data)
 
