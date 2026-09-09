@@ -52,14 +52,20 @@ def create_stripe_checkout_session(price: stripe.Price, user_id: int) -> stripe.
 
 
 def get_stripe_checkout_session_info(session_id: str) -> stripe.checkout.Session:
-    checkout_session = stripe.checkout.Session.retrieve(session_id)
-    return checkout_session
+    try:
+        checkout_session = stripe.checkout.Session.retrieve(session_id)
+        return checkout_session
+    except stripe.error.StripeError as e:
+        raise e
 
 
 if __name__ == "__main__":
-    test_product = create_stripe_product("test product")
+    # test_product = create_stripe_product("test product")
     # print(test_product)
-    product_price = create_stripe_price(test_product, 100)
+    # product_price = create_stripe_price(test_product, 100)
     # print(product_price)
-    session = create_stripe_checkout_session(product_price, 1)
+    # session = create_stripe_checkout_session(product_price, 1)
     # print(session)
+    # session = get_stripe_checkout_session_info(session_id="cs_123")
+    # print(session)
+    pass
