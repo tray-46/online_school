@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import PermissionDenied
@@ -112,7 +112,17 @@ class LessonUpdateAPIView(UpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
 
-@extend_schema(request=None, responses={204: None}, description="Delete the specifies lesson.")
+@extend_schema(
+    # summary="Delete a lesson",
+    description="Delete the specifies lesson.",
+    request=None,
+    responses={
+        204: OpenApiResponse(description="Lesson successfully deleted."),
+        401: OpenApiResponse(description="Authentication credentials were not provided."),
+        403: OpenApiResponse(description="You do not have permission to perform this action."),
+        404: OpenApiResponse(description="No Lesson matches the given query."),
+    },
+)
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
@@ -198,8 +208,8 @@ class PaymentRetrieveAPIView(RetrieveAPIView):
             try:
                 stripe_session = get_stripe_checkout_session_info(instance.stripe_checkout_session)
                 data["stripe_session"] = stripe_session.to_dict(recursive=True)
-            except stripe.error.StripeError:
-                data["stripe_session"] = None
+            except stripe.error.StripeError as e:
+                data["stripe_session"] = str(e)
         else:
             data["stripe_session"] = None
 
@@ -216,6 +226,8 @@ class CourseSubscriptionAPIView(APIView):
         responses={
             200: UnsubscribedSerializer,
             201: SubscribedSerializer,
+            400: OpenApiResponse(),
+            401: OpenApiResponse(description="Authentication credentials were not provided."),
         },
     )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -244,8 +256,14 @@ class CourseSubscriptionAPIView(APIView):
 
 
 @extend_schema(
+    summary="Stripe Webhook Listener",
+    description="Handles incoming Stripe webhook events.",
     request=None,
-    responses={200: None},
+    responses={
+        200: OpenApiResponse(description="Webhook processed successfully."),
+        400: OpenApiResponse(description="Invalid payload or signature."),
+    },
+    tags=["Payment"],
 )
 @csrf_exempt
 @api_view(["POST"])

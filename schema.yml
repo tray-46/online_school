@@ -207,6 +207,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Subscribed'
           description: ''
+        '400':
+          description: No response body
+        '401':
+          description: Authentication credentials were not provided.
   /api/lms/lessons/:
     get:
       operationId: lms_lessons_list
@@ -270,7 +274,13 @@ paths:
       - jwtAuth: []
       responses:
         '204':
-          description: No response body
+          description: Lesson successfully deleted.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: No Lesson matches the given query.
   /api/lms/lessons/{id}/update/:
     put:
       operationId: lms_lessons_update_update
@@ -435,14 +445,30 @@ paths:
   /api/lms/payments/webhook/:
     post:
       operationId: lms_payments_webhook_create
+      description: Handles incoming Stripe webhook events.
+      summary: Stripe Webhook Listener
       tags:
-      - lms
+      - Payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeWebhook'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StripeWebhook'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StripeWebhook'
+        required: true
       security:
       - jwtAuth: []
       - {}
       responses:
         '200':
-          description: No response body
+          description: Webhook processed successfully.
+        '400':
+          description: Invalid payload or signature.
   /api/users/:
     get:
       operationId: users_list
@@ -1007,6 +1033,14 @@ components:
             * `1` - перевод на счёт
           minimum: 0
           maximum: 32767
+        stripe_product_id:
+          type: string
+          nullable: true
+          maxLength: 255
+        stripe_price_id:
+          type: string
+          nullable: true
+          maxLength: 255
         stripe_checkout_session:
           type: string
           nullable: true
@@ -1023,6 +1057,36 @@ components:
       required:
       - date
       - title
+    StripeWebhook:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the event.
+        object:
+          type: string
+          description: String representing the object's type. Always 'event'.
+        type:
+          type: string
+          description: Type of the event.
+        data:
+          allOf:
+          - $ref: '#/components/schemas/StripeWebhookData'
+          description: Object containing the actual data payload.
+      required:
+      - data
+      - id
+      - object
+      - type
+    StripeWebhookData:
+      type: object
+      properties:
+        object:
+          type: object
+          additionalProperties: {}
+          description: The raw Stripe object wrapped in event.
+      required:
+      - object
     Subscribed:
       type: object
       properties:
