@@ -449,18 +449,6 @@ paths:
       summary: Stripe Webhook Listener
       tags:
       - Payment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StripeWebhook'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/StripeWebhook'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/StripeWebhook'
-        required: true
       security:
       - jwtAuth: []
       - {}
@@ -709,16 +697,26 @@ components:
           maximum: 2147483647
           minimum: 0
           title: Стоимость
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         author:
           type: integer
           nullable: true
           title: Автор
       required:
+      - created_at
       - id
       - lessons
       - lessons_count
       - subscription
       - title
+      - updated_at
     Lesson:
       type: object
       description: Serializer for Lesson model
@@ -749,6 +747,14 @@ components:
           maximum: 2147483647
           minimum: 0
           title: Стоимость
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         course:
           type: integer
           title: Курс
@@ -759,8 +765,10 @@ components:
           title: Автор
       required:
       - course
+      - created_at
       - id
       - title
+      - updated_at
     MethodEnum:
       enum:
       - 0
@@ -900,6 +908,14 @@ components:
           maximum: 2147483647
           minimum: 0
           title: Стоимость
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         author:
           type: integer
           nullable: true
@@ -934,6 +950,14 @@ components:
           maximum: 2147483647
           minimum: 0
           title: Стоимость
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
         course:
           type: integer
           title: Курс
@@ -1057,36 +1081,6 @@ components:
       required:
       - date
       - title
-    StripeWebhook:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the event.
-        object:
-          type: string
-          description: String representing the object's type. Always 'event'.
-        type:
-          type: string
-          description: Type of the event.
-        data:
-          allOf:
-          - $ref: '#/components/schemas/StripeWebhookData'
-          description: Object containing the actual data payload.
-      required:
-      - data
-      - id
-      - object
-      - type
-    StripeWebhookData:
-      type: object
-      properties:
-        object:
-          type: object
-          additionalProperties: {}
-          description: The raw Stripe object wrapped in event.
-      required:
-      - object
     Subscribed:
       type: object
       properties:
