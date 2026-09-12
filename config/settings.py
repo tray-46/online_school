@@ -137,7 +137,15 @@ MEDIA_URL = "/media/"
 
 MAILERS = {
     "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.getenv("EMAIL_HOST"),
+            "port": os.getenv("EMAIL_PORT"),
+            "use_tls": os.getenv("EMAIL_USE_TLS", False) == "True",
+            "use_ssl": os.getenv("EMAIL_USE_SSL", False) == "True",
+            "username": os.getenv("EMAIL_HOST_USER"),
+            "password": os.getenv("EMAIL_HOST_PASSWORD"),
+        }
     },
 }
 
