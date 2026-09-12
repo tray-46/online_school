@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -189,4 +190,8 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 10 * 60
 
 CELERY_BEAT_SCHEDULE = {
+    "inactive_users": {
+        "task": "users.tasks.block_inactive_users_task",
+        "schedule": crontab(minute=0, hour=0),
+    }
 }
