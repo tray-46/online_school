@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as TOPSerializer
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as TRSerializer
@@ -54,6 +55,7 @@ class TokenObtainPairSerializer(TOPSerializer):
         if self.user:
             data["username"] = self.user.username
             data["email"] = self.user.email
+            update_last_login(None, self.user)
 
         return data
 
