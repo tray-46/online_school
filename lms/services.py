@@ -6,12 +6,13 @@
 # django.setup()
 
 import stripe
-from django.conf import settings
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from django.core import mail
 
+from config.settings import STRIPE_CHECKOUT_CANCEL_URL, STRIPE_CHECKOUT_SUCCESS_URL, STRIPE_SECRET_KEY
 from lms.models import CourseSubscription
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = STRIPE_SECRET_KEY
 
 
 def create_stripe_product(product_name: str) -> stripe.Product:
@@ -50,8 +51,8 @@ def create_stripe_checkout_session(price: stripe.Price, user_id: int) -> stripe.
                 }
             ],
             mode="payment",
-            success_url=settings.STRIPE_CHECKOUT_SUCCESS_URL,
-            cancel_url=settings.STRIPE_CHECKOUT_CANCEL_URL,
+            success_url=STRIPE_CHECKOUT_SUCCESS_URL,
+            cancel_url=STRIPE_CHECKOUT_CANCEL_URL,
             metadata={
                 "user_id": str(user_id),
             },
@@ -61,7 +62,7 @@ def create_stripe_checkout_session(price: stripe.Price, user_id: int) -> stripe.
         raise e
 
 
-def get_stripe_checkout_session_info(session_id: int) -> stripe.checkout.Session:
+def get_stripe_checkout_session_info(session_id: str) -> stripe.checkout.Session:
     try:
         checkout_session = stripe.checkout.Session.retrieve(session_id)
         return checkout_session
@@ -77,8 +78,10 @@ def send_course_update_notification(course_id: int) -> None:
         msg = mail.EmailMessage(
             subject=f"Course '{subscriber.course.title}' Updated",
             body="You receive this message because course you subscribe for was updated./n/nКоманда sky.school.com",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[subscriber.user.email,],
+            from_email=DEFAULT_FROM_EMAIL,
+            to=[
+                subscriber.user.email,
+            ],
         )
         messages.append(msg)
 

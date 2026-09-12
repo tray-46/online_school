@@ -69,7 +69,9 @@ class CourseViewSet(ModelViewSet):
         serializer.save(author=self.request.user)
 
     def perform_update(self, serializer: BaseSerializer) -> None:
-        last_update = serializer.instance.updated_at
+        last_update = 0
+        if serializer.instance is not None:
+            last_update = serializer.instance.updated_at
         instance = serializer.save()
         hours_since_last_update = (instance.updated_at - last_update).total_seconds() / 3600
         if hours_since_last_update > 4:

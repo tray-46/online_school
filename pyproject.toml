@@ -6,7 +6,7 @@ authors = [
     {name = "tray",email = "at-box@mail.ru"}
 ]
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.14,<4"
 dependencies = [
     "django (>=6.1,<7.0)",
     "djangorestframework (>=3.18.0,<4.0.0)",
@@ -19,7 +19,7 @@ dependencies = [
     "stripe (>=15.6.1,<16.0.0)",
     "redis (>=8.1.0,<9.0.0)",
     "celery (>=5.6.3,<6.0.0)",
-    "gevent (>=26.8.0,<27.0.0)"
+    "gevent (>=26.8.0,<27.0.0)",
 ]
 
 
@@ -35,7 +35,9 @@ lint = [
     "mypy (>=2.2.0,<3.0.0)",
     "black (>=26.3.1,<27.0.0)",
     "django-stubs (>=6.1.0,<7.0.0)",
-    "djangorestframework-stubs (>=3.18.0,<4.0.0)"
+    "djangorestframework-stubs (>=3.18.0,<4.0.0)",
+    "celery-stubs (>=0.1.3,<0.2.0)",
+    "celery-types (>=0.26.0,<0.27.0)"
 ]
 dev = [
     "coverage (>=7.16.0,<8.0.0)"

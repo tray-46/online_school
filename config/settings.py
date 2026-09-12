@@ -146,7 +146,7 @@ MAILERS = {
             "use_ssl": os.getenv("EMAIL_USE_SSL", False) == "True",
             "username": os.getenv("EMAIL_HOST_USER"),
             "password": os.getenv("EMAIL_HOST_PASSWORD"),
-        }
+        },
     },
 }
 
@@ -176,13 +176,13 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-#stripe settings
+# stripe settings
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-STRIPE_CHECKOUT_SUCCESS_URL = os.getenv("STRIPE_CHECKOUT_SUCCESS_URL")
-STRIPE_CHECKOUT_CANCEL_URL = os.getenv("STRIPE_CHECKOUT_CANCEL_URL")
+STRIPE_CHECKOUT_SUCCESS_URL = os.getenv("STRIPE_CHECKOUT_SUCCESS_URL", "")
+STRIPE_CHECKOUT_CANCEL_URL = os.getenv("STRIPE_CHECKOUT_CANCEL_URL", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-#celery settings
+# celery settings
 CELERY_BROKER_URL = os.getenv("STRIPE_SECRET_KEY")
 CELERY_RESULT_BACKEND = os.getenv("STRIPE_SECRET_KEY")
 CELERY_TIMEZONE = TIME_ZONE
@@ -192,6 +192,6 @@ CELERY_TASK_TIME_LIMIT = 10 * 60
 CELERY_BEAT_SCHEDULE = {
     "inactive_users": {
         "task": "users.tasks.block_inactive_users_task",
-        "schedule": crontab(minute=0, hour=0),
+        "schedule": crontab(minute="0", hour="0"),
     }
 }

@@ -55,7 +55,7 @@ class TokenObtainPairSerializer(TOPSerializer):
         if self.user:
             data["username"] = self.user.username
             data["email"] = self.user.email
-            update_last_login(None, self.user)
+            update_last_login(User, self.user)
 
         return data
 
