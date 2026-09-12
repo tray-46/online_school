@@ -1,21 +1,48 @@
 from typing import Any, Sequence
 
+import stripe
 from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    get_object_or_404,
+)
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from config.settings import STRIPE_WEBHOOK_SECRET
 from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.paginators import Paginator
-from lms.serializers import CourseSerializer, CourseSubscriptionSerializer, LessonSerializer, PaymentSerializer
+from lms.serializers import (
+    CourseSerializer,
+    CourseSubscriptionSerializer,
+    LessonSerializer,
+    PaymentSerializer,
+    SubscribedSerializer,
+    UnsubscribedSerializer,
+)
+from lms.services import (
+    create_stripe_checkout_session,
+    create_stripe_price,
+    create_stripe_product,
+    get_stripe_checkout_session_info,
+)
 from users.permissions import IsAuthor, IsModerator
 
 
@@ -85,9 +112,59 @@ class LessonUpdateAPIView(UpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
 
+@extend_schema(
+    # summary="Delete a lesson",
+    description="Delete the specifies lesson.",
+    request=None,
+    responses={
+        204: OpenApiResponse(description="Lesson successfully deleted."),
+        401: OpenApiResponse(description="Authentication credentials were not provided."),
+        403: OpenApiResponse(description="You do not have permission to perform this action."),
+        404: OpenApiResponse(description="No Lesson matches the given query."),
+    },
+)
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModerator, IsAuthor]
+
+
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer: BaseSerializer) -> None:
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            raise PermissionDenied(detail="Must be authorised user.")
+        course = None
+        lesson = None
+        title = ""
+        amount = 0
+
+        if "courses" in self.request.path:
+            course = get_object_or_404(Course, pk=self.kwargs.get("pk"))
+            title = course.title
+            amount = course.price
+
+        if "lessons" in self.request.path:
+            lesson = get_object_or_404(Lesson, pk=self.kwargs.get("pk"))
+            title = lesson.title
+            amount = lesson.price
+
+        product = create_stripe_product(title)
+        price = create_stripe_price(product, amount)
+        checkout_session = create_stripe_checkout_session(price, user.id)
+
+        serializer.save(
+            user=self.request.user,
+            course=course,
+            lesson=lesson,
+            amount=amount,
+            stripe_product_id=product.id,
+            stripe_price_id=price.id,
+            stripe_checkout_session=checkout_session.id,
+            stripe_checkout_url=checkout_session.url,
+        )
 
 
 class PaymentListAPIView(ListAPIView):
@@ -109,13 +186,50 @@ class PaymentListAPIView(ListAPIView):
 
     def get_queryset(self) -> QuerySet[Payment]:
         if self.request.user.is_authenticated:
+            return Payment.objects.filter(user=self.request.user).order_by("date")
+        return Payment.objects.none()
+
+
+class PaymentRetrieveAPIView(RetrieveAPIView):
+    serializer_class = PaymentSerializer
+
+    def get_queryset(self) -> QuerySet[Payment]:
+        if self.request.user.is_authenticated:
             return Payment.objects.filter(user=self.request.user)
         return Payment.objects.none()
+
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        data = serializer.data
+
+        if instance.stripe_checkout_session:
+            try:
+                stripe_session = get_stripe_checkout_session_info(instance.stripe_checkout_session)
+                data["stripe_session"] = stripe_session.to_dict(recursive=True)
+            except stripe.error.StripeError as e:
+                data["stripe_session"] = str(e)
+        else:
+            data["stripe_session"] = None
+
+        return Response(data)
 
 
 class CourseSubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated, ~IsModerator]
 
+    @extend_schema(
+        summary="lms_course_subscription",
+        description="Processing course subscription: add or delete users subscription for specified course.",
+        request=None,
+        responses={
+            200: UnsubscribedSerializer,
+            201: SubscribedSerializer,
+            400: OpenApiResponse(),
+            401: OpenApiResponse(description="Authentication credentials were not provided."),
+        },
+    )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         user = self.request.user
 
@@ -139,3 +253,40 @@ class CourseSubscriptionAPIView(APIView):
             return Response({"message": message}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    summary="Stripe Webhook Listener",
+    description="Handles incoming Stripe webhook events.",
+    request=None,
+    responses={
+        200: OpenApiResponse(description="Webhook processed successfully."),
+        400: OpenApiResponse(description="Invalid payload or signature."),
+    },
+    tags=["Payment"],
+)
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def stripe_webhook(request: HttpRequest) -> HttpResponse:
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    endpoint_secret = STRIPE_WEBHOOK_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = session.get("metadata", {}).get("user_id")
+        session_id = session.get("id")
+
+        if user_id and session_id:
+            try:
+                Payment.objects.filter(user=user_id, stripe_checkout_session=session_id).update(status=True)
+            except Payment.DoesNotExist:
+                pass
+
+    return Response(status=status.HTTP_200_OK)

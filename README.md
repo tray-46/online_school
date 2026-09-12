@@ -33,7 +33,10 @@ git@github.com:tray-46/online_school.git
 ```
 
 Install dependencies.
-From `.env_example` create `.env` file and fill it with your environment settings.  
+From `.env_example` create `.env` file and fill it with your environment settings.
+
+Project uses [stripe.com](https://stripe.com/) for payment processing, so you must provide api keys.
+
 Create database with name specified in settings.  
 The project uses a modified AbstractUser model. If you've already applied migrations to the database, 
 you may need to roll back the migrations for the "auth" application.
@@ -44,7 +47,7 @@ python manage.py fill_db
 ```
 **Warning:**  
 command will clear existing payments, lessons and courses data and reset respective id sequences
-
+ 
 ### To run the application:  
 In console open project directory and execute following command:
 ```

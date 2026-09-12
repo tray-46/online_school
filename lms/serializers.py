@@ -63,6 +63,11 @@ class PaymentSerializer(serializers.ModelSerializer):
             "course",
             "lesson",
             "method",
+            "stripe_product_id",
+            "stripe_price_id",
+            "stripe_checkout_session",
+            "stripe_checkout_url",
+            "status",
         )
 
     def get_title(self, obj: Payment) -> str:
@@ -86,3 +91,11 @@ class CourseSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSubscription
         fields = "__all__"
+
+
+class SubscribedSerializer(serializers.Serializer):
+    message = serializers.CharField(default="Подписка добавлена")
+
+
+class UnsubscribedSerializer(serializers.Serializer):
+    message = serializers.CharField(default="Подписка удалена")

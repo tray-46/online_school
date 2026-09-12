@@ -1,6 +1,11 @@
+from typing import Any
+
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView as TOPView
 from rest_framework_simplejwt.views import TokenRefreshView as TRView
@@ -43,6 +48,14 @@ class UserRetrieveAPIView(RetrieveAPIView):
             return UserDetailSerializer
         return UserSerializer
 
+    @extend_schema(
+        responses={
+            200: UserSerializer,
+        }
+    )
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
+
 
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
@@ -51,6 +64,7 @@ class UserUpdateAPIView(UpdateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
 
+@extend_schema(request=None, responses={204: None}, description="Delete the specifies user.")
 class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated, IsAccountOwner]
