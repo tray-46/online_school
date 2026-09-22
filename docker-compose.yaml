@@ -1,0 +1,98 @@
+services:
+  db:
+    image: postgres:16.0
+    container_name: lms-db
+    restart: always
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=lms
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.10-alpine
+    container_name: lms-redis-broker
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  web:
+    build: .
+    container_name: lms-drf
+    command: >
+      bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PG_HOST=lms-db
+      - PG_PORT=5432
+      - PG_DBNAME=lms
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build: .
+    container_name: lms-celery-worker
+    command: celery -A config worker --loglevel=INFO
+    env_file:
+      - .env
+    environment:
+      - PG_HOST=lms-db
+      - PG_PORT=5432
+      - PG_DBNAME=lms
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  celery_beat:
+    build: .
+    container_name: lms-celery-beat
+    command: celery -A config beat --loglevel=INFO
+    env_file:
+      - .env
+    environment:
+      - PG_HOST=lms-db
+      - PG_PORT=5432
+      - PG_DBNAME=lms
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  redis_data:
