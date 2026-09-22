@@ -1,6 +1,7 @@
 import unittest
 from typing import Any
 from unittest.mock import MagicMock, patch
+from zoneinfo import ZoneInfo
 
 import stripe
 from django.contrib.auth.models import Group
@@ -8,6 +9,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from config.settings import TIME_ZONE
 from lms.models import Course, CourseSubscription, Lesson, Payment
 from lms.services import (
     create_stripe_checkout_session,
@@ -75,6 +77,8 @@ class LessonTest(APITestCase):
                     "preview_image": None,
                     "author": self.author.pk,
                     "price": 100,
+                    "created_at": self.lesson.created_at.astimezone(ZoneInfo(TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S"),
+                    "updated_at": self.lesson.updated_at.astimezone(ZoneInfo(TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S"),
                 }
             ],
         }
@@ -116,6 +120,8 @@ class LessonTest(APITestCase):
             "preview_image": None,
             "price": 100,
             "author": self.author.pk,
+            "created_at": self.lesson.created_at.astimezone(ZoneInfo(TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": self.lesson.updated_at.astimezone(ZoneInfo(TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S"),
         }
 
         response = self.client.get(url)
@@ -540,8 +546,23 @@ class PaymentTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, empty_result)
 
-    def test_retrieve_payment(self) -> None:
+    @patch("stripe.checkout.Session.retrieve")
+    def test_retrieve_payment(self, mock_session_retrieve: MagicMock) -> None:
         url = reverse("lms:payments_detail", args=[self.payment.pk])
+        mock_session_response = {
+            "id": "cs_12345",
+            "object": "checkout.session",
+            "mode": "payment",
+            "amount_total": 100,
+            "status": "open",
+            "url": "https://checkout.stripe.com/c/pay/cs_12345",
+            "metadata": {"user_id": "1"},
+        }
+        mock_session_retrieve.return_value = stripe.checkout.Session.construct_from(
+            mock_session_response,
+            key=None,
+        )
+
         result = {
             "user": self.payment.user.pk if self.payment.user else None,
             "title": self.course.title,
@@ -555,7 +576,7 @@ class PaymentTest(APITestCase):
             "stripe_checkout_session": self.payment.stripe_checkout_session,
             "stripe_checkout_url": self.payment.stripe_checkout_url,
             "status": self.payment.status,
-            "stripe_session": None,
+            "stripe_session": mock_session_response,
         }
 
         response = self.client.get(url)

@@ -1,6 +1,7 @@
 from typing import Any, Sequence
 
 import stripe
+from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -43,6 +44,7 @@ from lms.services import (
     create_stripe_product,
     get_stripe_checkout_session_info,
 )
+from lms.tasks import course_update_notification_task
 from users.permissions import IsAuthor, IsModerator
 
 
@@ -66,6 +68,15 @@ class CourseViewSet(ModelViewSet):
     def perform_create(self, serializer: BaseSerializer) -> None:
         serializer.save(author=self.request.user)
 
+    def perform_update(self, serializer: BaseSerializer) -> None:
+        last_update = 0
+        if serializer.instance is not None:
+            last_update = serializer.instance.updated_at
+        instance = serializer.save()
+        hours_since_last_update = (instance.updated_at - last_update).total_seconds() / 3600
+        if hours_since_last_update > 4:
+            transaction.on_commit(lambda: course_update_notification_task.delay(instance.pk))
+
     def get_queryset(self) -> QuerySet[Course]:
         is_moderator = IsModerator()
         if is_moderator.has_permission(self.request, self):
@@ -81,7 +92,13 @@ class LessonCreateAPIView(CreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer: BaseSerializer) -> None:
-        serializer.save(author=self.request.user)
+        instance = serializer.save(author=self.request.user)
+        course_updated_at = instance.course.updated_at
+        hours_since_last_update = (instance.created_at - course_updated_at).total_seconds() / 3600
+        if hours_since_last_update > 4:
+            instance.course.updated_at = instance.created_at
+            instance.course.save(update_fields=["updated_at"])
+            transaction.on_commit(lambda: course_update_notification_task.delay(instance.course.pk))
 
 
 class LessonListAPIView(ListAPIView):
@@ -110,6 +127,15 @@ class LessonUpdateAPIView(UpdateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, IsModerator | IsAuthor]
     parser_classes = [MultiPartParser, FormParser]
+
+    def perform_update(self, serializer: BaseSerializer) -> None:
+        instance = serializer.save()
+        course_updated_at = instance.course.updated_at
+        hours_since_last_update = (instance.updated_at - course_updated_at).total_seconds() / 3600
+        if hours_since_last_update > 4:
+            instance.course.updated_at = instance.updated_at
+            instance.course.save(update_fields=["updated_at"])
+            transaction.on_commit(lambda: course_update_notification_task.delay(instance.course.pk))
 
 
 @extend_schema(

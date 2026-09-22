@@ -27,6 +27,8 @@ class Course(models.Model):
     )
     price = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Автор")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Курс"
@@ -60,6 +62,8 @@ class Lesson(models.Model):
     )
     price = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Автор")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Урок"

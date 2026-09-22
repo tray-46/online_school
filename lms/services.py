@@ -1,7 +1,18 @@
-import stripe
-from django.conf import settings
+# import os
+# import django
+#
+# # Replace 'your_project_name' with the folder name containing your settings.py
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+# django.setup()
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+import stripe
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
+from django.core import mail
+
+from config.settings import STRIPE_CHECKOUT_CANCEL_URL, STRIPE_CHECKOUT_SUCCESS_URL, STRIPE_SECRET_KEY
+from lms.models import CourseSubscription
+
+stripe.api_key = STRIPE_SECRET_KEY
 
 
 def create_stripe_product(product_name: str) -> stripe.Product:
@@ -40,8 +51,8 @@ def create_stripe_checkout_session(price: stripe.Price, user_id: int) -> stripe.
                 }
             ],
             mode="payment",
-            success_url=settings.STRIPE_CHECKOUT_SUCCESS_URL,
-            cancel_url=settings.STRIPE_CHECKOUT_CANCEL_URL,
+            success_url=STRIPE_CHECKOUT_SUCCESS_URL,
+            cancel_url=STRIPE_CHECKOUT_CANCEL_URL,
             metadata={
                 "user_id": str(user_id),
             },
@@ -59,6 +70,26 @@ def get_stripe_checkout_session_info(session_id: str) -> stripe.checkout.Session
         raise e
 
 
+def send_course_update_notification(course_id: int) -> None:
+    subscribers = CourseSubscription.objects.filter(course_id=course_id).select_related("course", "user")
+
+    messages = list()
+    for subscriber in subscribers:
+        msg = mail.EmailMessage(
+            subject=f"Course '{subscriber.course.title}' Updated",
+            body="You receive this message because course you subscribe for was updated./n/nКоманда sky.school.com",
+            from_email=DEFAULT_FROM_EMAIL,
+            to=[
+                subscriber.user.email,
+            ],
+        )
+        messages.append(msg)
+
+    if messages:
+        backend = mail.mailers.default
+        backend.send_messages(messages)
+
+
 if __name__ == "__main__":
     # test_product = create_stripe_product("test product")
     # print(test_product)
@@ -68,4 +99,5 @@ if __name__ == "__main__":
     # print(session)
     # session = get_stripe_checkout_session_info(session_id="cs_123")
     # print(session)
+    # send_course_update_notification(1)
     pass

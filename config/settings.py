@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -137,7 +138,15 @@ MEDIA_URL = "/media/"
 
 MAILERS = {
     "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.getenv("EMAIL_HOST"),
+            "port": os.getenv("EMAIL_PORT"),
+            "use_tls": os.getenv("EMAIL_USE_TLS", False) == "True",
+            "use_ssl": os.getenv("EMAIL_USE_SSL", False) == "True",
+            "username": os.getenv("EMAIL_HOST_USER"),
+            "password": os.getenv("EMAIL_HOST_PASSWORD"),
+        },
     },
 }
 
@@ -167,7 +176,22 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
+# stripe settings
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-STRIPE_CHECKOUT_SUCCESS_URL = "http://127.0.0.1:8000/payments/{CHECKOUT_SESSION_ID}/"
-STRIPE_CHECKOUT_CANCEL_URL = "http://127.0.0.1:8000/"
+STRIPE_CHECKOUT_SUCCESS_URL = os.getenv("STRIPE_CHECKOUT_SUCCESS_URL", "")
+STRIPE_CHECKOUT_CANCEL_URL = os.getenv("STRIPE_CHECKOUT_CANCEL_URL", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+# celery settings
+CELERY_BROKER_URL = os.getenv("STRIPE_SECRET_KEY")
+CELERY_RESULT_BACKEND = os.getenv("STRIPE_SECRET_KEY")
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 10 * 60
+
+CELERY_BEAT_SCHEDULE = {
+    "inactive_users": {
+        "task": "users.tasks.block_inactive_users_task",
+        "schedule": crontab(minute="0", hour="0"),
+    }
+}

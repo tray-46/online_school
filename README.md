@@ -35,7 +35,8 @@ git@github.com:tray-46/online_school.git
 Install dependencies.
 From `.env_example` create `.env` file and fill it with your environment settings.
 
-Project uses [stripe.com](https://stripe.com/) for payment processing, so you must provide api keys.
+Project uses [stripe.com](https://stripe.com/) for payment processing, so you must provide api keys.  
+Project use Celery, so you will need a message broker.
 
 Create database with name specified in settings.  
 The project uses a modified AbstractUser model. If you've already applied migrations to the database, 
@@ -52,4 +53,12 @@ command will clear existing payments, lessons and courses data and reset respect
 In console open project directory and execute following command:
 ```
 python manage.py runserver
+```
+Start Celery worker process:
+```
+celery -A config worker --loglevel=INFO --pool=gevent
+```
+Start Celery beat process:
+```
+celery -A config beat --loglevel=INFO
 ```
