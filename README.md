@@ -50,6 +50,7 @@ python manage.py fill_db
 command will clear existing payments, lessons and courses data and reset respective id sequences
  
 ### To run the application:  
+#### Locally:
 In console open project directory and execute following command:
 ```
 python manage.py runserver
@@ -61,4 +62,24 @@ celery -A config worker --loglevel=INFO --pool=gevent
 Start Celery beat process:
 ```
 celery -A config beat --loglevel=INFO
+```
+#### Containerized:
+You can run application in container by executing following command in project root directory
+```
+# --build - rebuild all images berore starting 
+# -d - start app in detached mode
+docker compose up --build -d
+```
+To show containers and they current status
+```
+docker compose ps 
+```
+For checking metrics and logs
+```
+# -f - stream logs in real time
+docker compose logs -f 
+```
+For stoping application
+```
+docker compose stop
 ```
