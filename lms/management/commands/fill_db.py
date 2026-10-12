@@ -28,6 +28,7 @@ class Command(BaseCommand):
             for sql in sequence_reset_sql:
                 cursor.execute(sql)
 
+        call_command("create_moderator")
         call_command("create_courses")
         call_command("create_lessons")
         call_command("create_test_payments")
