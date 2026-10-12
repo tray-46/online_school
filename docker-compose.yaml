@@ -29,12 +29,18 @@ services:
       timeout: 5s
       retries: 5
 
-
   web:
-    build: .
+    build:
+      context: ./
+      dockerfile: ./docker/django/Dockerfile
     container_name: lms-drf
-    command: >
-      bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - static_data:/app/static
+    command:  bash -c "
+                python manage.py collectstatic --no-input 
+                && python manage.py migrate 
+                && gunicorn config.wsgi:application --bind 0.0.0.0:8000
+      "
     ports:
       - "8000:8000"
     env_file:
@@ -46,7 +52,9 @@ services:
         condition: service_healthy
 
   celery_worker:
-    build: .
+    build:
+      context: ./
+      dockerfile: ./docker/django/Dockerfile
     container_name: lms-celery-worker
     command: celery -A config worker --loglevel=INFO
     env_file:
@@ -56,7 +64,9 @@ services:
         condition: service_healthy
 
   celery_beat:
-    build: .
+    build:
+      context: ./
+      dockerfile: ./docker/django/Dockerfile
     container_name: lms-celery-beat
     command: celery -A config beat --loglevel=INFO
     env_file:
@@ -65,6 +75,26 @@ services:
       redis:
         condition: service_healthy
 
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: lms-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_data:/app/static/:ro
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:6.1.0
+    container_name: lms-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
 volumes:
   pg_data:
   redis_data:
+  static_data:
