@@ -36,14 +36,18 @@ class Command(BaseCommand):
         odin_s_1, _ = Lesson.objects.get_or_create(title="Что такое 1C", course_id=3, author_id=3)
 
         tester_1, _ = Lesson.objects.get_or_create(title="Что такое разработка ПО", course_id=4, author_id=1)
-        tester_2, _ = Lesson.objects.get_or_create(title="Кто участвует в процессе разработки", course_id=4, author_id=1)
+        tester_2, _ = Lesson.objects.get_or_create(
+            title="Кто участвует в процессе разработки", course_id=4, author_id=1
+        )
         tester_3, _ = Lesson.objects.get_or_create(title="Как выстроить эффективную работу", course_id=4, author_id=1)
         tester_4, _ = Lesson.objects.get_or_create(title="Что такое качественное ПО", course_id=4, author_id=1)
         tester_5, _ = Lesson.objects.get_or_create(title="Что такое QA", course_id=4, author_id=1)
         tester_6, _ = Lesson.objects.get_or_create(title="Чем занимаются QA-инженеры ", course_id=4, author_id=1)
         tester_7, _ = Lesson.objects.get_or_create(title="Виды тестирования", course_id=4, author_id=1)
         tester_8, _ = Lesson.objects.get_or_create(title="7 принципов тестирования", course_id=4, author_id=1)
-        tester_9, _ = Lesson.objects.get_or_create(title="Что нужно, чтобы стать QA-инженером", course_id=4, author_id=1)
+        tester_9, _ = Lesson.objects.get_or_create(
+            title="Что нужно, чтобы стать QA-инженером", course_id=4, author_id=1
+        )
 
         cyber_sec_1, _ = Lesson.objects.get_or_create(title="Введение в Linux", course_id=5, author_id=3)
         cyber_sec_2, _ = Lesson.objects.get_or_create(title="Первая установка Linux", course_id=5, author_id=3)
