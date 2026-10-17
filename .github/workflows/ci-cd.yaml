@@ -141,9 +141,9 @@ jobs:
           script: |
             cd ${{ secrets.DEPLOY_DIR }}
             export APP_WEB_IMAGE=${{ secrets.DOCKER_HUB_USER }}/lms:latest
-            docker compose -f docker-compose.prod.yaml stop
-            docker compose -f docker-compose.prod.yaml pull
-            docker compose -f docker-compose.prod.yaml up -d
+            sudo docker compose -f docker-compose.prod.yaml stop
+            sudo docker compose -f docker-compose.prod.yaml pull
+            sudo docker compose -f docker-compose.prod.yaml up -d
     
 
 #  build:
