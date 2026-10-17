@@ -140,11 +140,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.DEPLOY_DIR }}
-            sudo touch .env
-            sudo echo ${{ secrets.ENV }} >> .env
-            sudo touch docker-compose.prod.yaml
-            sudo echo ${{ secrets.DCP }} >> docker-compose.prod.yaml
             export APP_WEB_IMAGE=${{ secrets.DOCKER_HUB_USER }}/lms:latest
+            docker compose -f docker-compose.prod.yaml stop
             docker compose -f docker-compose.prod.yaml pull
             docker compose -f docker-compose.prod.yaml up -d
     
