@@ -137,7 +137,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: bzz
           script: |
             cd ${{ secrets.DEPLOY_DIR }}
             export APP_WEB_IMAGE=${{ secrets.DOCKER_HUB_USER }}/lms:latest
