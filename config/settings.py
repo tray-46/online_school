@@ -15,6 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from celery.schedules import crontab
+from django.conf.global_settings import SECURE_CROSS_ORIGIN_OPENER_POLICY
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -203,3 +204,5 @@ CORS_ALLOW_CREDENTIALS = os.getenv("CORS_ALLOW_CREDENTIALS", False) == "True"
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
 CSRF_COOKIE_HTTPONLY = False
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
