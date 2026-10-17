@@ -144,7 +144,7 @@ jobs:
             cd ${{ secrets.DEPLOY_DIR }}
             sudo docker compose -f docker-compose.prod.yaml stop
             sudo docker compose -f docker-compose.prod.yaml pull
-            sudo docker compose -f docker-compose.prod.yaml up -d
+            sudo docker compose -f docker-compose.prod.yaml up -d --remove-orphans
     
 
 #  build:
