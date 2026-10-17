@@ -140,7 +140,7 @@ jobs:
           password: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.DEPLOY_DIR }}
-            export APP_WEB_IMAGE=${{ secrets.DOCKER_HUB_USER }}/lms-drf:latest
+            export APP_WEB_IMAGE=${{ secrets.DOCKER_HUB_USER }}/lms:latest
             docker compose -f docker-compose.prod.yaml pull
             docker compose -f docker-compose.prod.yaml up -d
     
