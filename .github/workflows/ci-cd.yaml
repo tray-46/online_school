@@ -126,6 +126,8 @@ jobs:
 #          file: /docker/django/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USER }}/lms:latest
+          cache-from: type:gha
+          cache-to: type:gha,mode=max
 
   deploy:
     runs-on: ubuntu-latest
