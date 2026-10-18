@@ -15,7 +15,6 @@ from datetime import timedelta
 from pathlib import Path
 
 from celery.schedules import crontab
-from django.conf.global_settings import SECURE_CROSS_ORIGIN_OPENER_POLICY
 from dotenv import load_dotenv
 
 load_dotenv()
