@@ -11,7 +11,7 @@
 
 # Docker
 docker-compose.yaml
-Dockerfile
+docker/django/Dockerfile
 .docker
 .dockerignore
 
