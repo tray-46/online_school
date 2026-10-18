@@ -8,7 +8,10 @@
         </li>
         <li>
           <a href="#getting-started">Getting started</a>
-        </li>        
+        </li>     
+        <li>
+          <a href="#ci-cd">CI/CD</a>
+        </li> 
     </ol>
 </details>
 
@@ -83,3 +86,26 @@ For stoping application
 ```
 docker compose stop
 ```
+
+### CI/CD
+Project support CI/CD implemented via GitHub actions.  
+On push and pull request to main branch it will run:
+ - testing
+ - lint
+ - docker image build and upload to Docker Hub
+ - pulling new image on server and restarting containers 
+
+Initial set up for workflow:
++ Server set up:
+    - Server supporting connections via ssh
+    - Install Docker and Docker Compose
+    - Create directory for the application and copy your .env production file, [nginx.conf](docker/nginx/nginx.conf) file and [docker-compose.prod.yaml](docker-compose.prod.yaml)
+    - Login into Docker Hub
++ GitHub repository set up:
+    Add following repository secrets:
+    - SERVER_IP - your server public IP or domain name
+    - SSH_USER - user for ssh connection to server
+    - SSH_PRIVATE_KEY - shh key for connection
+    - DEPLOY_DIR - working directory of application
+    - DOCKER_HUB_USER
+    - DOCKER_HUB_ACCESS_TOKEN - token for Docker Hub connection
